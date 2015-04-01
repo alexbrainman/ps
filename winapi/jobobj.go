@@ -8,6 +8,8 @@ import (
 	"syscall"
 )
 
+//go:generate go run $GOROOT/src/syscall/mksyscall_windows.go -output zwinapi.go jobobj.go psapi.go
+
 const (
 	// Job object security and access rights.
 	DELETE                             = 0x00010000
