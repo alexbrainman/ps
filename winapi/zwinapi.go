@@ -2,19 +2,24 @@
 
 package winapi
 
-import "unsafe"
-import "syscall"
+import (
+	"syscall"
+	"unsafe"
+
+	"golang.org/x/sys/windows"
+)
 
 var _ unsafe.Pointer
 
 var (
-	modkernel32 = syscall.NewLazyDLL("kernel32.dll")
-	modpsapi    = syscall.NewLazyDLL("psapi.dll")
+	modkernel32 = windows.NewLazySystemDLL("kernel32.dll")
+	modpsapi    = windows.NewLazySystemDLL("psapi.dll")
 
 	procCreateJobObjectW         = modkernel32.NewProc("CreateJobObjectW")
 	procOpenJobObjectW           = modkernel32.NewProc("OpenJobObjectW")
 	procAssignProcessToJobObject = modkernel32.NewProc("AssignProcessToJobObject")
 	procSetInformationJobObject  = modkernel32.NewProc("SetInformationJobObject")
+	procTerminateJobObject       = modkernel32.NewProc("TerminateJobObject")
 	procGetProcessMemoryInfo     = modpsapi.NewProc("GetProcessMemoryInfo")
 )
 
@@ -64,6 +69,18 @@ func AssignProcessToJobObject(job syscall.Handle, process syscall.Handle) (err e
 
 func SetInformationJobObject(job syscall.Handle, infoclass uint32, info uintptr, infolien uint32) (err error) {
 	r1, _, e1 := syscall.Syscall6(procSetInformationJobObject.Addr(), 4, uintptr(job), uintptr(infoclass), uintptr(info), uintptr(infolien), 0, 0)
+	if r1 == 0 {
+		if e1 != 0 {
+			err = error(e1)
+		} else {
+			err = syscall.EINVAL
+		}
+	}
+	return
+}
+
+func TerminateJobObject(job syscall.Handle, exitcode uint32) (err error) {
+	r1, _, e1 := syscall.Syscall(procTerminateJobObject.Addr(), 2, uintptr(job), uintptr(exitcode), 0)
 	if r1 == 0 {
 		if e1 != 0 {
 			err = error(e1)
