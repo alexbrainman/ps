@@ -46,3 +46,4 @@ type JOBOBJECT_ASSOCIATE_COMPLETION_PORT struct {
 //sys	OpenJobObject(desiredAccess uint32, inheritHandles bool, name *uint16) (handle syscall.Handle, err error) = kernel32.OpenJobObjectW
 //sys	AssignProcessToJobObject(job syscall.Handle, process syscall.Handle) (err error) = kernel32.AssignProcessToJobObject
 //sys	SetInformationJobObject(job syscall.Handle, infoclass uint32, info uintptr, infolien uint32) (err error) = kernel32.SetInformationJobObject
+//sys	TerminateJobObject(job syscall.Handle, exitcode uint32) (err error) = kernel32.TerminateJobObject

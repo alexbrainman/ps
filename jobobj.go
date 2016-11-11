@@ -52,3 +52,7 @@ func (jo *JobObject) AddCurrentProcess() error {
 	}
 	return jo.AddProcess(p)
 }
+
+func (jo *JobObject) Terminate(exitcode uint32) error {
+	return winapi.TerminateJobObject(jo.Handle, exitcode)
+}
