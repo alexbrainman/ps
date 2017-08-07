@@ -35,11 +35,51 @@ const (
 	JOB_OBJECT_MSG_ABNORMAL_EXIT_PROCESS = 8
 	JOB_OBJECT_MSG_PROCESS_MEMORY_LIMIT  = 9
 	JOB_OBJECT_MSG_JOB_MEMORY_LIMIT      = 10
+
+	JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE          = 0x2000
+	JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION = 0x400
+	JOB_OBJECT_LIMIT_ACTIVE_PROCESS             = 8
+	JOB_OBJECT_LIMIT_JOB_MEMORY                 = 0x200
+	JOB_OBJECT_LIMIT_JOB_TIME                   = 4
+	JOB_OBJECT_LIMIT_PROCESS_MEMORY             = 0x100
+	JOB_OBJECT_LIMIT_PROCESS_TIME               = 2
+	JOB_OBJECT_LIMIT_WORKINGSET                 = 1
+	JOB_OBJECT_LIMIT_AFFINITY                   = 0x00000010
 )
 
 type JOBOBJECT_ASSOCIATE_COMPLETION_PORT struct {
 	CompletionKey  uintptr
 	CompletionPort syscall.Handle
+}
+
+type IO_COUNTERS struct {
+	ReadOperationCount  uint64
+	WriteOperationCount uint64
+	OtherOperationCount uint64
+	ReadTransferCount   uint64
+	WriteTransferCount  uint64
+	OtherTransferCount  uint64
+}
+
+type JOBOBJECT_BASIC_LIMIT_INFORMATION struct {
+	PerProcessUserTimeLimit int64
+	PerJobUserTimeLimit     int64
+	LimitFlags              uint32
+	MinimumWorkingSetSize   uintptr
+	MaximumWorkingSetSize   uintptr
+	ActiveProcessLimit      uint32
+	Affinity                uintptr
+	PriorityClass           uint32
+	SchedulingClass         uint32
+}
+
+type JOBOBJECT_EXTENDED_LIMIT_INFORMATION struct {
+	BasicLimitInformation JOBOBJECT_BASIC_LIMIT_INFORMATION
+	IoInfo                IO_COUNTERS
+	ProcessMemoryLimit    uintptr
+	JobMemoryLimit        uintptr
+	PeakProcessMemoryUsed uintptr
+	PeakJobMemoryUsed     uintptr
 }
 
 //sys	CreateJobObject(jobAttrs *syscall.SecurityAttributes, name *uint16) (handle syscall.Handle, err error) = kernel32.CreateJobObjectW
